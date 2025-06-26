@@ -1,7 +1,4 @@
 import "dotenv/config"; 
-import { ENV } from "./config/env.js"; 
-
-
 
 
 export const ENV = {
