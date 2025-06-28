@@ -14,17 +14,18 @@ export const authStyles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: 24,
-    paddingTop: 40,
+    paddingTop: 60,
   },
   imageContainer: {
-    height: height * 0.3,
-    marginBottom: 30,
+    height: height * 0.25,
+    marginTop: 20,
+    marginBottom: 20,
     justifyContent: "center",
     alignItems: "center",
   },
   image: {
-    width: 320,
-    height: 320,
+    width: 280,
+    height: 280,
   },
   title: {
     fontSize: 28,
