@@ -45,14 +45,45 @@ const SignInScreen = () => {
       });
 
       if (signInAttempt.status === "complete") {
-        await setActive({ session: signInAttempt.createdSessionId });
+        try {
+          await setActive({ session: signInAttempt.createdSessionId });
+        } catch (err) {
+          const code =
+            err?.errors?.[0]?.code ||
+            err?.code ||
+            err?.message ||
+            "";
+          if (
+            code === "session_exists" ||
+            code.includes("session exists") ||
+            code.includes("Session already exists")
+          ) {
+            router.replace("/");
+          } else {
+            throw err;
+          }
+        }
+        router.replace("/");
       } else {
         Alert.alert("Error", "Sign in failed. Please try again.");
         console.error(JSON.stringify(signInAttempt, null, 2));
       }
     } catch (err) {
-      Alert.alert("Error", err.errors?.[0]?.message || "Sign in failed");
-      console.error(JSON.stringify(err, null, 2));
+      const code =
+        err?.errors?.[0]?.code ||
+        err?.code ||
+        err?.message ||
+        "";
+      if (
+        code === "session_exists" ||
+        code.includes("session exists") ||
+        code.includes("Session already exists")
+      ) {
+        router.replace("/");
+      } else {
+        Alert.alert("Error", err.errors?.[0]?.message || err.message || "Sign in failed");
+        console.error(JSON.stringify(err, null, 2));
+      }
     } finally {
       setLoading(false);
     }
@@ -78,9 +109,10 @@ const SignInScreen = () => {
           </View>
 
           <Text style={authStyles.title}>Welcome Back</Text>
-          
+
+          {/* FORM CONTAINER */}
           <View style={authStyles.formContainer}>
-           
+            {/* Email Input */}
             <View style={authStyles.inputContainer}>
               <TextInput
                 style={authStyles.textInput}

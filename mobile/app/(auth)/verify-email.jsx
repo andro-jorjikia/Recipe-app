@@ -13,8 +13,13 @@ import {
 import { authStyles } from "../../assets/styles/auth.styles";
 import { Image } from "expo-image";
 import { COLORS } from "../../constants/colors";
+import { useAuth } from "@clerk/clerk-expo";
+import { useRouter } from "expo-router";
+
 const VerifyEmail = ({ email, onBack }) => {
   const { isLoaded, signUp, setActive } = useSignUp();
+  const { isSignedIn } = useAuth();
+  const router = useRouter();
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -26,7 +31,20 @@ const VerifyEmail = ({ email, onBack }) => {
       const signUpAttempt = await signUp.attemptEmailAddressVerification({ code });
 
       if (signUpAttempt.status === "complete") {
-        await setActive({ session: signUpAttempt.createdSessionId });
+        try {
+          await setActive({ session: signUpAttempt.createdSessionId });
+        } catch (err) {
+          if (
+            err.errors &&
+            err.errors[0] &&
+            err.errors[0].code === "session_exists"
+          ) {
+            
+          } else {
+            throw err;
+          }
+        }
+        router.replace("/");
       } else {
         Alert.alert("Error", "Verification failed. Please try again.");
         console.error(JSON.stringify(signUpAttempt, null, 2));

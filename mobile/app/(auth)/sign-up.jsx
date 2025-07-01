@@ -110,6 +110,7 @@ const SignUpScreen = () => {
                 />
               </TouchableOpacity>
             </View>
+            
 
             {/* Sign Up Button */}
             <TouchableOpacity
