@@ -77,7 +77,7 @@ const HomeScreen = () => {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    // await sleep(2000);
+    await sleep(2000);
     await loadData();
     setRefreshing(false);
   };
@@ -101,7 +101,6 @@ const HomeScreen = () => {
         }
         contentContainerStyle={homeStyles.scrollContent}
       >
-        {/*  ANIMAL ICONS */}
         <View style={homeStyles.welcomeSection}>
           <Image
             source={require("../../assets/images/lamb.png")}
