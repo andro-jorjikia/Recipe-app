@@ -1,4 +1,4 @@
-import { View, Text, Alert, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, Alert, ScrollView, TouchableOpacity, Animated, StyleSheet } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState, useRef } from "react";
 import { useUser } from "@clerk/clerk-expo";
@@ -11,11 +11,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { COLORS } from "../../constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import { WebView } from "react-native-webview";
-import { Swipeable } from "react-native-gesture-handler";
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { RectButton } from 'react-native-gesture-handler';
-import { Animated, Easing } from "react-native";
-import { StyleSheet } from "react-native";
+import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 
 const RecipeDetailScreen = () => {
   const { id: recipeId } = useLocalSearchParams();
@@ -38,9 +34,9 @@ const RecipeDetailScreen = () => {
     const checkIfSaved = async () => {
       try {
         const response = await fetch(`${API_URL}/favorites/${userId}`);
-        const favorites = await response.json();
-        const isRecipeSaved = favorites.some((fav) => fav.recipeId === parseInt(recipeId));
-        setIsSaved(isRecipeSaved);
+        const favorites = await response.json() || [];
+        const isRecipeSaved = Array.isArray(favorites) && favorites.some((fav) => fav.recipeId === parseInt(recipeId));       
+         setIsSaved(isRecipeSaved);
       } catch (error) {
         console.error("Error checking if recipe is saved:", error);
       }
@@ -74,7 +70,6 @@ const RecipeDetailScreen = () => {
   }, [recipeId, userId]);
 
   const getYouTubeEmbedUrl = (url) => {
-    // example url: https://www.youtube.com/watch?v=mTvlmY4vCug
     const videoId = url.split("v=")[1];
     return `https://www.youtube.com/embed/${videoId}`;
   };
@@ -288,7 +283,6 @@ const RecipeDetailScreen = () => {
                 {recipe.ingredients.map((ingredient, index) => {
                   const checked = checkedIngredients.includes(index);
 
-                  // Initialize animation value for this index if not present
                   if (!slideAnims.current[index]) {
                     slideAnims.current[index] = new Animated.Value(300);
                   }

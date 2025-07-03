@@ -99,24 +99,20 @@ export const MealAPI = {
       ? meal.strInstructions.split(/\r?\n/).filter((step) => step.trim())
       : [];
 
-    // Try to estimate servings and cookTime from tags or instructions
     let servings = 4;
     let cookTime = "30 minutes";
-    // Try to parse servings from tags (e.g., "serves-2")
     if (meal.strTags) {
       const match = meal.strTags.match(/serves?-?(\d+)/i);
       if (match) {
         servings = parseInt(match[1], 10);
       }
     }
-    // Try to parse cookTime from tags (e.g., "45min")
     if (meal.strTags) {
       const match = meal.strTags.match(/(\d+)(min|minutes|hour|hr)/i);
       if (match) {
         cookTime = match[0];
       }
     }
-    // Optionally, try to parse from instructions (very basic)
     if (instructions.length > 0) {
       const match = instructions[0].match(/(\d+)(min|minutes|hour|hr)/i);
       if (match) {
