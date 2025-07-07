@@ -1,9 +1,9 @@
 import { View, Text, Alert, ScrollView, TouchableOpacity, FlatList } from "react-native";
 import { useClerk, useUser } from "@clerk/clerk-expo";
 import { useEffect, useState } from "react";
-import { API_URL } from "../../constants/api";
 import { favoritesStyles } from "../../assets/styles/favorites.styles";
 import { COLORS } from "../../constants/colors";
+import { API_URL } from "@/constants/api";
 import { Ionicons } from "@expo/vector-icons";
 import RecipeCard from "../../components/RecipeCard";
 import NoFavoritesFound from "../../components/noFavoritesFound";
@@ -17,16 +17,20 @@ const FavoritesScreen = () => {
 
   useEffect(() => {
     const loadFavorites = async () => {
+      console.log("Loading favorites for user:", user.id);
       try {
-        const response = await fetch(`${API_URL}/favorites/${user.id}`);
+        const response = await fetch(`http://localhost:5001/api/favorites/${user.id}`);
+        console.log("Favorites response status:", response.status);
         if (!response.ok) throw new Error("Failed to fetch favorites");
 
         const favorites = await response.json();
+        console.log("Favorites data:", favorites);
 
         const transformedFavorites = favorites.map((favorite) => ({
           ...favorite,
           id: favorite.recipeId,
         }));
+        console.log("Transformed favorites:", transformedFavorites);
 
         setFavoriteRecipes(transformedFavorites);
       } catch (error) {
@@ -58,7 +62,7 @@ const FavoritesScreen = () => {
             <Ionicons name="log-out-outline" size={22} color={COLORS.text} />
           </TouchableOpacity>
         </View>
-
+ 
         <View style={favoritesStyles.recipesSection}>
           <FlatList
             data={favoriteRecipes}

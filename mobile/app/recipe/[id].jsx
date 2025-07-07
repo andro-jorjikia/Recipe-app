@@ -33,7 +33,7 @@ const RecipeDetailScreen = () => {
   useEffect(() => {
     const checkIfSaved = async () => {
       try {
-        const response = await fetch(`${API_URL}/favorites/${userId}`);
+        const response = await fetch(`http://localhost:5001/api/favorites/${userId}`);
         const favorites = await response.json() || [];
         const isRecipeSaved = Array.isArray(favorites) && favorites.some((fav) => fav.recipeId === parseInt(recipeId));       
          setIsSaved(isRecipeSaved);
@@ -75,36 +75,51 @@ const RecipeDetailScreen = () => {
   };
 
   const handleToggleSave = async () => {
+    console.log("handleToggleSave called, isSaved:", isSaved);
+    console.log("userId:", userId);
+    console.log("recipeId:", recipeId);
+    console.log("recipe:", recipe);
+    
     setIsSaving(true);
 
     try {
       if (isSaved) {
         // remove from favorites
-        const response = await fetch(`${API_URL}/favorites/${userId}/${recipeId}`, {
+        console.log("Removing from favorites...");
+        const response = await fetch(`http://localhost:5001/api/favorites/${userId}/${recipeId}`, {
           method: "DELETE",
         });
+        console.log("Delete response status:", response.status);
         if (!response.ok) throw new Error("Failed to remove recipe");
 
         setIsSaved(false);
+        console.log("Recipe removed from favorites");
       } else {
         // add to favorites
-        const response = await fetch(`${API_URL}/favorites`, {
+        console.log("Adding to favorites...");
+        const requestBody = {
+          userId,
+          recipeId: parseInt(recipeId),
+          title: recipe.title,
+          image: recipe.image,
+          cookTime: recipe.cookTime,
+          servings: recipe.servings,
+        };
+        console.log("Request body:", requestBody);
+        
+        const response = await fetch(`http://localhost:5001/api/favorites`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            userId,
-            recipeId: parseInt(recipeId),
-            title: recipe.title,
-            image: recipe.image,
-            cookTime: recipe.cookTime,
-            servings: recipe.servings,
-          }),
+          body: JSON.stringify(requestBody),
         });
-
+        console.log("POST response status:", response.status);
+        console.log("POST response:", await response.text());
+        
         if (!response.ok) throw new Error("Failed to save recipe");
         setIsSaved(true);
+        console.log("Recipe added to favorites");
       }
     } catch (error) {
       console.error("Error toggling recipe save:", error);
